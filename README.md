@@ -138,7 +138,29 @@ Once configured, PromptTrap runs transparently. Every tool call is:
 3. **Logged** to stdout (JSON) and SQLite
 4. **Executed** (if allowed)
 
+### Dashboard
+
+PromptTrap includes a web dashboard for visualizing audit data:
+
+```bash
+npm run dashboard
+```
+
+Then open `http://127.0.0.1:9099` in your browser.
+
+**Features:**
+- 📊 Real-time activity feed (auto-refreshes every 3 seconds)
+- 🔍 DLP findings summary with severity breakdown
+- 📈 Tool usage chart showing which tools are called most
+- ⏱️ Session timeline with user and activity tracking
+
 ### Viewing Audit Logs
+
+**Dashboard (recommended)**:
+```bash
+npm run dashboard
+# Open http://127.0.0.1:9099
+```
 
 **Stdout (real-time)**:
 ```bash
@@ -218,20 +240,22 @@ node dist/index.js
 
 ## Roadmap
 
-### Phase 1 (Current)
+### Phase 1 ✅ Complete
 - ✅ File tools (read, list, write)
 - ✅ DLP scanner with built-in patterns
 - ✅ Policy engine with path restrictions
 - ✅ SQLite audit log
 - ✅ Structured JSON logging
 
-### Phase 2
-- [ ] Web fetch tool
-- [ ] Dashboard (web UI for viewing audit logs)
+### Phase 2 ✅ Complete
+- ✅ Web fetch tool with domain restrictions
+- ✅ Dashboard (web UI for viewing audit logs)
+- ✅ Real-time activity monitoring
+- ✅ DLP findings visualization
+
+### Phase 3 (Next)
 - [ ] Shell execution tool (disabled by default)
 - [ ] Database query tool
-
-### Phase 3
 - [ ] SIEM integration (syslog, webhook output)
 - [ ] Docker container
 - [ ] npm package publishing

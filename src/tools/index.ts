@@ -8,6 +8,7 @@ import {
   fileList,
   fileWrite,
 } from './file-tools.js'
+import { WebFetchArgsSchema, webFetch } from './web-tools.js'
 import type { Config } from '../config.js'
 import type { PolicyEngine } from '../policy/engine.js'
 import type { DLPScanner } from '../policy/dlp-scanner.js'
@@ -124,6 +125,10 @@ export function registerTools(
           result = await executeTool('file_write', args, FileWriteArgsSchema, fileWrite)
           break
 
+        case 'web_fetch':
+          result = await executeTool('web_fetch', args, WebFetchArgsSchema, webFetch)
+          break
+
         default:
           throw new Error(`Unknown tool: ${name}`)
       }
@@ -192,6 +197,38 @@ export function getToolsList(config: Config) {
         required: ['path', 'content'],
       },
       destructiveHint: true,
+    })
+  }
+
+  if (config.tools.web.enabled) {
+    tools.push({
+      name: 'web_fetch',
+      description: 'Fetch content from a URL',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          url: {
+            type: 'string',
+            description: 'The URL to fetch',
+          },
+          method: {
+            type: 'string',
+            enum: ['GET', 'POST', 'PUT', 'DELETE'],
+            description: 'HTTP method',
+            default: 'GET',
+          },
+          headers: {
+            type: 'object',
+            description: 'HTTP headers',
+          },
+          body: {
+            type: 'string',
+            description: 'Request body for POST/PUT',
+          },
+        },
+        required: ['url'],
+      },
+      readOnlyHint: true,
     })
   }
 
