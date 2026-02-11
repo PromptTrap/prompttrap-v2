@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+*.db
+*.sqlite
+.env
+.DS_Store
+prompttrap.yaml
