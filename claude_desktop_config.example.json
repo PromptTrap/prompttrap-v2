@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "prompttrap": {
+      "command": "node",
+      "args": ["/Users/ward/Code/prompttrap-v2/packages/mcp-server/dist/index.js"],
+      "env": {
+        "PROMPTTRAP_CONFIG": "/Users/ward/Code/prompttrap-v2/prompttrap.yaml",
+        "USER": "ward@altgreen.com"
+      }
+    }
+  }
+}

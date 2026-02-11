@@ -47,18 +47,23 @@ Run `npm run demo && npm run dashboard` to see it in action!
 
 ### Installation
 
-**Option 1: npm (recommended)**
-```bash
-npm install -g prompttrap
-```
-
-**Option 2: From source**
+**Option 1: From source (currently required - npm package coming soon)**
 ```bash
 git clone https://github.com/wardspan/prompttrap
 cd prompttrap
 npm install
 npm run build
 ```
+
+The `prompttrap` command will be available at:
+- **macOS/Linux**: `./packages/mcp-server/dist/index.js`
+- **Windows**: `.\packages\mcp-server\dist\index.js`
+
+**Option 2: npm (coming soon)**
+```bash
+npm install -g prompttrap
+```
+*Note: Package publication to npm is in progress. For now, use Option 1.*
 
 **Option 3: Docker**
 ```bash
@@ -81,8 +86,28 @@ cp prompttrap.example.yaml prompttrap.yaml
 
 Add PromptTrap to your `claude_desktop_config.json`:
 
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**Config file location:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**For local installation (recommended for now):**
+
+```json
+{
+  "mcpServers": {
+    "prompttrap": {
+      "command": "node",
+      "args": ["/absolute/path/to/prompttrap-v2/packages/mcp-server/dist/index.js"],
+      "env": {
+        "PROMPTTRAP_CONFIG": "/absolute/path/to/prompttrap.yaml",
+        "USER": "your.email@company.com"
+      }
+    }
+  }
+}
+```
+
+**For npm installation (once published):**
 
 ```json
 {
@@ -99,9 +124,20 @@ Add PromptTrap to your `claude_desktop_config.json`:
 }
 ```
 
-3. Restart Claude Desktop
+**Setup steps:**
 
-4. You should see PromptTrap tools available in Claude (file_read, file_list, file_write)
+1. Copy the example config:
+```bash
+cp packages/mcp-server/prompttrap.example.yaml prompttrap.yaml
+```
+
+2. Edit `prompttrap.yaml` to customize settings
+
+3. Update `claude_desktop_config.json` with the paths above (use absolute paths!)
+
+4. Restart Claude Desktop
+
+5. You should see PromptTrap tools available in Claude (file_read, file_list, file_write)
 
 ## Configuration
 
