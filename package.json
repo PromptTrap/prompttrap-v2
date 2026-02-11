@@ -13,7 +13,9 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit",
-    "dashboard": "node dist/dashboard/server.js"
+    "dashboard": "node dist/dashboard/server.js",
+    "demo": "npx tsx scripts/demo.ts",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "mcp",

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  prompttrap:
+    build: .
+    container_name: prompttrap
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      - PROMPTTRAP_CONFIG=/app/config/prompttrap.yaml
+      - USER=docker-user@company.com
+    ports:
+      - "9099:9099"
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    container_name: prompttrap-dashboard
+    command: ["node", "dist/dashboard/server.js"]
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      - PROMPTTRAP_CONFIG=/app/config/prompttrap.yaml
+    ports:
+      - "9099:9099"
+    restart: unless-stopped

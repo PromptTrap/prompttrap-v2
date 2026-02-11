@@ -6,6 +6,25 @@ PromptTrap gives security teams visibility into how AI tools interact with corpo
 
 **Philosophy:** This is a "carrot, not stick" approach. Users load PromptTrap because it gives them useful tools to access corporate resources from their AI tools. The security telemetry is a side effect of providing that access.
 
+---
+
+**📸 Dashboard Preview**
+
+Real-time monitoring of AI tool usage with DLP detection:
+
+<!-- TODO: Add screenshots after running npm run demo -->
+<!-- ![Dashboard Overview](docs/images/dashboard-overview.png) -->
+
+Features visible in the dashboard:
+- 📊 Live activity feed with tool calls and DLP findings
+- 🔍 Security pattern detection (API keys, SSNs, credit cards)
+- 📈 Tool usage analytics and session tracking
+- ⚡ Updates every 3 seconds
+
+Run `npm run demo && npm run dashboard` to see it in action!
+
+---
+
 ## Features
 
 - 🔍 **Full Audit Logging** — Every tool call is logged with structured JSON (stdout + SQLite)
@@ -19,8 +38,24 @@ PromptTrap gives security teams visibility into how AI tools interact with corpo
 
 ### Installation
 
+**Option 1: npm (recommended)**
 ```bash
 npm install -g prompttrap
+```
+
+**Option 2: From source**
+```bash
+git clone https://github.com/wardspan/prompttrap
+cd prompttrap
+npm install
+npm run build
+```
+
+**Option 3: Docker**
+```bash
+docker pull wardspan/prompttrap
+# or build locally
+docker build -t prompttrap .
 ```
 
 ### Configuration
@@ -218,6 +253,54 @@ File System / Web / Database / Shell
 - **Path restrictions**: Use `denied_paths` to protect sensitive directories (`.ssh`, `.env`, `/etc/shadow`, etc.)
 - **DLP on input AND output**: Scans both tool arguments and responses for sensitive data.
 
+## Demo
+
+Run a realistic demo session with intentional DLP findings:
+
+```bash
+npm run demo
+```
+
+This simulates an AI session that:
+- Reads normal files
+- Attempts to read `.env` with AWS keys (⚠️ DLP detected)
+- Reads customer data with SSNs (⚠️ DLP detected)
+- Tries to access SSH keys (🚫 blocked by policy)
+- Makes web requests
+- Writes test data
+
+Perfect for screenshots and demonstrations!
+
+## Docker Deployment
+
+**Run with Docker Compose:**
+
+```bash
+# Create config directory
+mkdir -p config data
+cp prompttrap.example.yaml config/prompttrap.yaml
+
+# Start the service
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+**Run standalone:**
+
+```bash
+docker run -d \
+  -v $(pwd)/config:/app/config \
+  -v $(pwd)/data:/app/data \
+  -e PROMPTTRAP_CONFIG=/app/config/prompttrap.yaml \
+  -p 9099:9099 \
+  prompttrap
+```
+
 ## Development
 
 ```bash
@@ -236,7 +319,17 @@ npm run build
 
 # Run locally
 node dist/index.js
+
+# Run demo
+npm run demo
+
+# Start dashboard
+npm run dashboard
 ```
+
+### Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
 
 ## Roadmap
 
@@ -261,9 +354,33 @@ node dist/index.js
 - [ ] npm package publishing
 - [ ] Advanced policy rules (rate limiting, user roles)
 
-## Contributing
+## FAQ
 
-Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+**Q: Does PromptTrap slow down AI tool responses?**  
+A: Minimal impact. Typical overhead is 10-50ms per tool call. DLP scanning and logging happen asynchronously where possible.
+
+**Q: Can I use this with tools other than Claude Desktop?**  
+A: Yes! PromptTrap works with any MCP-compatible client (Cursor, VS Code with MCP extensions, etc.)
+
+**Q: How do I export audit logs?**  
+A: Logs are in SQLite (`prompttrap.db`). Export with:
+```bash
+sqlite3 prompttrap.db ".mode csv" ".output audit.csv" "SELECT * FROM audit_log;"
+```
+
+**Q: Can I add custom DLP patterns?**  
+A: Yes! Add them to your `prompttrap.yaml`:
+```yaml
+dlp:
+  patterns:
+    custom:
+      - name: "employee_id"
+        pattern: "EMP-\\d{6}"
+        severity: "medium"
+```
+
+**Q: Does this send my data anywhere?**  
+A: No. PromptTrap runs entirely locally. All data stays on your machine. The only network calls are the ones you explicitly make via `web_fetch`.
 
 ## License
 
