@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptTrap</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 350px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+    }
+
+    header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #1e293b;
+    }
+
+    h1 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #334155;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3b82f6;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .session-list {
+      margin-bottom: 16px;
+    }
+
+    .session-item {
+      background: #1e293b;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .session-header {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .session-meta {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .warning {
+      border-left-color: #f59e0b;
+    }
+
+    .error {
+      border-left-color: #ef4444;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    button.secondary {
+      background: #334155;
+    }
+
+    button.secondary:hover {
+      background: #475569;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #1e293b;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      background: #475569;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle.active {
+      background: #22c55e;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle.active .toggle-slider {
+      transform: translateX(24px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PromptTrap</h1>
+    <p class="subtitle">AI Usage Monitoring</p>
+  </header>
+
+  <div class="toggle-container">
+    <span style="font-size: 13px;">Monitoring Enabled</span>
+    <div id="monitoring-toggle" class="toggle active">
+      <div class="toggle-slider"></div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-value" id="ai-services-count">0</div>
+      <div class="stat-label">AI Services</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="dlp-findings-count">0</div>
+      <div class="stat-label">DLP Findings</div>
+    </div>
+  </div>
+
+  <h3 style="font-size: 14px; margin-bottom: 8px;">Recent Sessions</h3>
+  <div class="session-list" id="session-list">
+    <div class="empty-state">No sessions yet. Visit an AI service to start monitoring.</div>
+  </div>
+
+  <div class="actions">
+    <button id="open-dashboard">Open Dashboard</button>
+    <button class="secondary" id="clear-data">Clear Session Data</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

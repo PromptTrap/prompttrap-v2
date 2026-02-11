@@ -1,0 +1,85 @@
+# PromptTrap Configuration
+# Copy this file to prompttrap.yaml and customize for your environment
+
+server:
+  name: "prompttrap"
+  version: "0.1.0"
+
+identity:
+  # How to identify the current user
+  # Options: env (reads USER env var), static (hardcoded), header
+  method: "env"
+  env_var: "USER"
+  # static_user: "jane.doe@company.com"
+
+tools:
+  file:
+    enabled: true
+    # If allowed_paths is empty, all paths are allowed (except denied)
+    allowed_paths: []
+      # - "/home"
+      # - "/tmp"
+      # - "/Users"
+
+    # Paths to explicitly deny (takes precedence over allowed_paths)
+    denied_paths:
+      - "/etc/shadow"
+      - "/etc/passwd"
+      - "**/.env"           # Block .env files anywhere
+      - "**/.ssh/**"        # Block SSH keys anywhere
+      - "**/id_rsa"         # Block private keys
+      - "**/id_ed25519"
+
+    max_file_size_mb: 10
+
+  web:
+    enabled: true
+    allowed_domains: []  # empty = allow all
+    denied_domains: []
+      # - "*.internal.company.com"
+
+  shell:
+    enabled: false  # DISABLED BY DEFAULT — high risk
+    allowed_commands: []
+    denied_commands:
+      - "rm -rf"
+      - "curl"  # use web_fetch instead
+
+  database:
+    enabled: false
+    connection_string: ""  # user must configure
+    read_only: true
+
+dlp:
+  enabled: true
+  # Action to take when DLP violations are detected
+  # log = log only, warn = log + warning, block = prevent operation
+  action: "log"
+
+  patterns:
+    credit_cards: true
+    ssn: true
+    api_keys: true
+    emails: false  # too noisy for most use cases
+
+    # Add custom patterns here
+    custom: []
+    # - name: "internal_project_code"
+    #   pattern: "PROJ-[A-Z]{3}-\\d{4}"
+    #   severity: "medium"
+
+logging:
+  # Output structured JSON logs to stdout
+  stdout: true
+
+  # Store audit logs in SQLite database
+  sqlite:
+    enabled: true
+    path: "./prompttrap.db"
+
+  # Future: webhook, syslog, OCSF
+
+dashboard:
+  enabled: true
+  port: 9099
+  bind: "127.0.0.1"  # localhost only by default

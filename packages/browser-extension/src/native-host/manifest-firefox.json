@@ -1,0 +1,9 @@
+{
+  "name": "com.prompttrap.host",
+  "description": "PromptTrap native messaging host",
+  "path": "/usr/local/bin/prompttrap-host",
+  "type": "stdio",
+  "allowed_extensions": [
+    "prompttrap@altgreen.com"
+  ]
+}

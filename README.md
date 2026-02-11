@@ -27,12 +27,21 @@ Run `npm run demo && npm run dashboard` to see it in action!
 
 ## Features
 
+### MCP Server
 - 🔍 **Full Audit Logging** — Every tool call is logged with structured JSON (stdout + SQLite)
 - 🛡️ **DLP Scanning** — Automatic detection of credit cards, SSNs, API keys, private keys, and more
 - 🚦 **Policy Engine** — File path restrictions, tool enable/disable, configurable actions
 - 📊 **Built for Security Teams** — Query audit logs, track DLP findings, understand AI tool usage
 - 🔌 **MCP Compatible** — Works with Claude Desktop, Cursor, VS Code, and other MCP clients
 - ⚙️ **Single YAML Config** — No database migrations, no environment variable soup
+
+### Browser Extension (NEW)
+- 🌐 **Monitor Web-Based AI Tools** — Track usage of ChatGPT, Claude.ai, Gemini, Perplexity, and more
+- 🎯 **DLP in the Browser** — Scan pasted content and submitted prompts for sensitive data
+- 🔔 **Real-Time Warnings** — Alert users before they paste API keys or credit cards into AI chats
+- 📊 **Unified Dashboard** — Browser events appear alongside MCP server events in the same audit log
+- 🏢 **Enterprise-Ready** — Deploy via Chrome Enterprise, Microsoft Intune, or Group Policy
+- 🔒 **Privacy-First** — Only metadata logged by default; full prompt logging optional
 
 ## Quick Start
 
@@ -233,7 +242,150 @@ sqlite3 prompttrap.db "SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 10
 }
 ```
 
+## Browser Extension
+
+PromptTrap includes a Chrome/Edge extension that monitors web-based AI tools and provides DLP protection in the browser.
+
+### Supported AI Services
+
+The extension automatically detects and monitors these services:
+- ChatGPT (chatgpt.com)
+- Claude.ai (claude.ai)
+- Google Gemini (gemini.google.com)
+- Perplexity (perplexity.ai)
+- DeepSeek (deepseek.com)
+- Microsoft Copilot (copilot.microsoft.com)
+- Poe (poe.com)
+- HuggingChat (huggingface.co/chat)
+- You.com (you.com)
+- Phind (phind.com)
+
+### Installation
+
+**Development Installation:**
+
+1. Build the extension:
+```bash
+npm install
+npm run build:extension
+```
+
+2. Load in Chrome:
+   - Open `chrome://extensions`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select `packages/browser-extension/dist`
+
+3. Install the native messaging host:
+```bash
+# macOS/Linux
+cd packages/browser-extension/dist/native-host
+chmod +x install-native-host.sh
+./install-native-host.sh
+
+# Windows
+cd packages\browser-extension\dist\native-host
+install-native-host.bat
+```
+
+**Enterprise Deployment:**
+
+See [Enterprise Deployment Guide](./packages/browser-extension/docs/ENTERPRISE_DEPLOYMENT.md) for:
+- Chrome Enterprise (force install via Google Admin Console)
+- Microsoft Intune deployment with PowerShell
+- Group Policy deployment for Active Directory
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Browser (ChatGPT, Claude, Gemini, etc.)                    │
+│                                                               │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Content Script                                       │   │
+│  │  • Detects AI service                                 │   │
+│  │  • Monitors paste/input/submit events                 │   │
+│  │  • Scans with DLP patterns                            │   │
+│  │  • Shows toast warnings                               │   │
+│  └──────────────┬──────────────────────────────────────┘   │
+│                 │                                             │
+│  ┌──────────────▼──────────────────────────────────────┐   │
+│  │  Background Service Worker                            │   │
+│  │  • Session tracking                                   │   │
+│  │  • Badge updates                                      │   │
+│  │  • Native messaging                                   │   │
+│  └──────────────┬──────────────────────────────────────┘   │
+└─────────────────┼──────────────────────────────────────────┘
+                  │
+                  │ Chrome Native Messaging Protocol
+                  │
+┌─────────────────▼──────────────────────────────────────────┐
+│  Native Messaging Host (Node.js)                            │
+│  • Reads stdin (4-byte length prefix + JSON)               │
+│  • Writes to SQLite (same DB as MCP server)                │
+│  • Responds to extension                                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+
+Configure the extension via `chrome.storage.managed` (enterprise) or local storage:
+
+```json
+{
+  "dlp": {
+    "enabled": true,
+    "action": "warn",
+    "patterns": {
+      "credit_cards": true,
+      "ssn": true,
+      "api_keys": true,
+      "emails": false
+    }
+  },
+  "logFullPrompts": false,
+  "sessionTimeout": 1800000
+}
+```
+
+**Privacy Settings:**
+- `logFullPrompts: false` (default): Only logs metadata (service, timestamp, DLP findings)
+- `logFullPrompts: true`: Logs full prompt text for compliance review
+
+### Extension Popup
+
+Click the PromptTrap icon to see:
+- 📊 Session statistics (events, DLP findings, services used)
+- 📝 Recent sessions with timestamps
+- ⚙️ Extension status and toggle
+- 🔗 Link to full dashboard
+
+### Example Browser Event
+
+```json
+{
+  "timestamp": "2026-02-11T15:30:00.000Z",
+  "source": "browser_extension",
+  "session_id": "browser-abc-123",
+  "user": "jane.doe@company.com",
+  "service": "ChatGPT",
+  "event_type": "paste",
+  "dlp_findings": [
+    {
+      "pattern": "aws_access_key",
+      "severity": "high",
+      "location": "paste",
+      "redacted_sample": "AKIA***Q7ZF"
+    }
+  ],
+  "action_taken": "warned",
+  "full_text": null
+}
+```
+
 ## Architecture
+
+### MCP Server Architecture
 
 ```
 AI Client (Claude Desktop, Cursor, etc.)
@@ -244,6 +396,16 @@ PromptTrap MCP Server
     └── Logger (stdout JSON + SQLite)
     ↓
 File System / Web / Database / Shell
+```
+
+### Browser Extension Architecture
+
+```
+Web Browser → Content Script → Background Worker → Native Host → SQLite
+                     ↓                                            ↑
+              DLP Scanner (in-browser)                            │
+                                                                  │
+                                        Unified Dashboard ────────┘
 ```
 
 ## Security Considerations
@@ -346,13 +508,26 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
 - ✅ Real-time activity monitoring
 - ✅ DLP findings visualization
 
-### Phase 3 (Next)
+### Phase 3 ✅ Complete
+- ✅ Browser extension (Chrome MV3)
+- ✅ AI service detection (ChatGPT, Claude, Gemini, +7 more)
+- ✅ DLP scanning in browser
+- ✅ Native messaging to unified SQLite database
+- ✅ Enterprise deployment (Chrome Enterprise, Intune, GPO)
+- ✅ Privacy-first architecture (metadata only by default)
+- ✅ Extension popup UI with session stats
+- ✅ Demo script and comprehensive tests
+- ✅ Docker deployment
+
+### Phase 4 (Future)
 - [ ] Shell execution tool (disabled by default)
 - [ ] Database query tool
-- [ ] SIEM integration (syslog, webhook output)
-- [ ] Docker container
+- [ ] SIEM integration (syslog, webhook output, OCSF format)
 - [ ] npm package publishing
+- [ ] Chrome Web Store submission
 - [ ] Advanced policy rules (rate limiting, user roles)
+- [ ] Browser extension for Firefox
+- [ ] Prompt anonymization and tokenization
 
 ## FAQ
 

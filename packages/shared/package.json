@@ -1,0 +1,25 @@
+{
+  "name": "@prompttrap/shared",
+  "version": "0.1.0",
+  "description": "Shared types and utilities for PromptTrap",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["dlp", "patterns", "types"],
+  "author": "Ward Spangler / AltGreen Research LLC",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#1e40af"/>
+  <g fill="#ffffff">
+    <!-- Shield shape -->
+    <path d="M64 20 L90 30 L90 60 Q90 85 64 100 Q38 85 38 60 L38 30 Z" stroke="#fbbf24" stroke-width="3" fill="none"/>
+    <!-- Lock icon inside shield -->
+    <rect x="56" y="55" width="16" height="18" rx="2" fill="#fbbf24"/>
+    <path d="M58 55 L58 48 Q58 43 64 43 Q70 43 70 48 L70 55" stroke="#fbbf24" stroke-width="3" fill="none"/>
+    <!-- Alert triangle -->
+    <path d="M64 82 L72 95 L56 95 Z" fill="#fbbf24"/>
+    <circle cx="64" cy="90" r="1.5" fill="#1e40af"/>
+    <rect x="63" y="85" width="2" height="4" fill="#1e40af"/>
+  </g>
+</svg>
